@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'version_widget.dart';
 import 'update_service.dart';
@@ -38,12 +37,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(title: const Text('Welcome')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Welcome to the app!'),
+            const Text(
+              'Welcome to the app!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
             const VersionWidget(),
             if (_updateAvailable)
               Padding(
