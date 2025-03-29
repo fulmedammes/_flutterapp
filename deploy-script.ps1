@@ -1,49 +1,57 @@
-# Simple Deployment Script for Flutter Web App to GitHub Pages
-
-Write-Host "Starting deployment process..." -ForegroundColor Cyan
+# Flutter Web Deployment Script using git worktree
 
 # Step 1: Build the Flutter web app
 Write-Host "Building Flutter web app..." -ForegroundColor Cyan
 flutter build web --base-href "/\_flutterapp/"
 
-# Step 2: Create .nojekyll file
+# Step 2: Create .nojekyll file to disable Jekyll processing
 Write-Host "Creating .nojekyll file..." -ForegroundColor Cyan
 New-Item -Path "build\web\.nojekyll" -ItemType File -Force | Out-Null
 
-# Step 3: Save current branch name
-$currentBranch = git rev-parse --abbrev-ref HEAD
-Write-Host "Current branch: $currentBranch" -ForegroundColor Cyan
+# Step 3: Setup Git worktree for gh-pages (much more reliable)
+Write-Host "Setting up Git worktree for gh-pages branch..." -ForegroundColor Cyan
 
-# Step 4: Checkout gh-pages branch (create if doesn't exist)
-Write-Host "Checking out gh-pages branch..." -ForegroundColor Cyan
-$ghPagesBranchExists = git show-ref --verify --quiet refs/heads/gh-pages
+# Check if gh-pages branch exists, create if not
+git show-ref --verify --quiet refs/heads/gh-pages
 if (-not $?) {
     Write-Host "Creating gh-pages branch..." -ForegroundColor Yellow
     git checkout --orphan gh-pages
-    git rm -rf . | Out-Null
-} else {
-    git checkout gh-pages
-    # Clean the branch
-    Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
+    git reset --hard
+    git commit --allow-empty -m "Initial gh-pages commit"
+    git push origin gh-pages
+    git checkout main
 }
 
-# Step 5: Get the build files path and copy them
-$buildPath = Join-Path -Path (Get-Location).Path -ChildPath "..\build\web\*"
-Write-Host "Copying build files from: $buildPath" -ForegroundColor Cyan
+# Remove existing gh-pages worktree if it exists
+if (Test-Path -Path "gh-pages") {
+    Write-Host "Removing existing gh-pages worktree..." -ForegroundColor Yellow
+    git worktree remove -f gh-pages
+}
 
-# Use robocopy for more reliable file copying
-$destinationPath = (Get-Location).Path
-robocopy "..\build\web" $destinationPath /E
+# Create fresh worktree for gh-pages branch
+Write-Host "Creating fresh worktree for gh-pages branch..." -ForegroundColor Cyan
+git worktree add -f gh-pages gh-pages
 
-# Step 6: Commit and push changes
-Write-Host "Committing changes to gh-pages branch..." -ForegroundColor Cyan
-git add --all
+# Step 4: Copy build files to gh-pages directory
+Write-Host "Copying build files to gh-pages directory..." -ForegroundColor Cyan
+Push-Location gh-pages
+# Remove all files except .git
+Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force
+# Copy build files
+Copy-Item -Path "..\build\web\*" -Destination . -Recurse
+
+# Step 5: Commit and push changes
+Write-Host "Committing and pushing changes..." -ForegroundColor Cyan
+git add -A
 git commit -m "Deploy to GitHub Pages"
-git push origin gh-pages -f
+git push origin gh-pages
 
-# Step 7: Return to original branch
-Write-Host "Returning to $currentBranch branch..." -ForegroundColor Cyan
-git checkout $currentBranch
+# Return to main directory
+Pop-Location
+
+# Step 6: Clean up
+Write-Host "Cleaning up..." -ForegroundColor Cyan
+git worktree remove -f gh-pages
 
 Write-Host "Deployment complete!" -ForegroundColor Green
 Write-Host "Your app should be available at: https://fulmedammes.github.io/_flutterapp/" -ForegroundColor Green
