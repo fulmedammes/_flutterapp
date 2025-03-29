@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Screen! #12')),
+      appBar: AppBar(title: const Text('Home Screen! #13 - Fixed Paths')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
