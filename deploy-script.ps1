@@ -2,7 +2,7 @@
 
 # Step 1: Build the Flutter web app
 Write-Host "Building Flutter web app..." -ForegroundColor Cyan
-flutter build web --base-href "/\_flutterapp/"
+flutter build web --base-href "/_flutterapp/"
 
 # Step 2: Create .nojekyll file to disable Jekyll processing
 Write-Host "Creating .nojekyll file..." -ForegroundColor Cyan
