@@ -1,3 +1,6 @@
+# Get the current working directory
+$workingDirectory = Get-Location
+
 # Build Flutter web app with correct base-href
 Write-Host "Building Flutter web app..." -ForegroundColor Cyan
 flutter clean
@@ -9,6 +12,9 @@ if (-not (Test-Path -Path "build\web")) {
     Write-Host "Make sure Flutter build completed successfully." -ForegroundColor Red
     exit 1
 }
+
+# Store the full path to the build web directory
+$webBuildPath = Join-Path -Path $workingDirectory -ChildPath "build\web"
 
 # Save the current branch
 $currentBranch = & git rev-parse --abbrev-ref HEAD
@@ -33,7 +39,8 @@ Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
 
 # Copy the built files directly from build/web to root
 Write-Host "Copying built files to root directory..." -ForegroundColor Cyan
-Copy-Item -Path "..\build\web\*" -Destination . -Recurse -Force
+Write-Host "Source path: $webBuildPath"
+Copy-Item -Path "$webBuildPath\*" -Destination . -Recurse -Force
 
 # Add, commit, and push changes
 Write-Host "Committing and pushing changes..." -ForegroundColor Cyan
