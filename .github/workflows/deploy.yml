@@ -40,6 +40,8 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }} #expires in April 5th 2026
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: vercel --prod --token $VERCEL_TOKEN --confirm --scope $VERCEL_ORG_ID --cwd build/web
+        run: |
+          cd build/web
+          vercel --prod --token $VERCEL_TOKEN --confirm --scope $VERCEL_ORG_ID
 
 
