@@ -1,35 +1,35 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Flutter Web to Vercel
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Flutter
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'
-          channel: 'stable'
-      
+          flutter-version: '3.19.0'  # Change to your desired Flutter version
+
       - name: Install dependencies
         run: flutter pub get
-      
-      - name: Build web
-        run: flutter build web --base-href "/_flutterapp/"
-      
-      - name: Create .nojekyll file
-        run: touch ./build/web/.nojekyll
-      
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          force_orphan: true 
+
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }} #expires in April 5th 2026  
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel --prod --token $VERCEL_TOKEN --confirm --org $VERCEL_ORG_ID --project $VERCEL_PROJECT_ID --cwd build/web
