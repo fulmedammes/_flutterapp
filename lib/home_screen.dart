@@ -84,6 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.refresh),
               label: const Text('Check for Updates'),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('button x'),
+            ),
           ],
         ),
       ),
