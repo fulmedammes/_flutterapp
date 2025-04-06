@@ -3,7 +3,7 @@ description: A Flutter web app with welcome screen, version, and PWA features.
 
 publish_to: 'none'
 
-version: 1.0.0+18
+version: 1.0.0+19
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -32,4 +32,3 @@ flutter:
     # Add a placeholder asset file that always exists
     - pubspec.yaml  # This file always exists in the project
     # .env is optional and may not exist in production builds
-    - .env
