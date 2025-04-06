@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'version_widget.dart';
 import 'update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'dart:html' as html;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -38,7 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _reloadApp() {
-    html.window.location.reload();
+    // TODO: Implement PWA update mechanism here.
+    // The previous html.window.location.reload() only works in a browser tab,
+    // not reliably for installed PWAs. Need to interact with the service worker
+    // (e.g., postMessage({action: 'skipWaiting'}) and then reload).
+    print("Update Now button clicked - PWA reload logic needed.");
   }
 
   Future<void> _signOut() async {
