@@ -38,6 +38,6 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         working-directory: ./build/web
-        run: vercel . --prod --confirm --token $VERCEL_TOKEN
+        run: vercel deploy --prebuilt --prod --confirm --token $VERCEL_TOKEN
 
 
