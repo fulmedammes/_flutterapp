@@ -1,0 +1,35 @@
+name: my_pwa_app
+description: A Flutter web app with welcome screen, version, and PWA features.
+
+publish_to: 'none'
+
+version: 1.0.0+17
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.2.2
+  package_info_plus: ^5.0.1
+  http: ^1.1.0
+  supabase_flutter: ^2.8.4
+  flutter_dotenv: ^5.2.1
+  supabase_auth_ui: 0.4.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets section
+  assets:
+    # Add a placeholder asset file that always exists
+    - pubspec.yaml  # This file always exists in the project
+    # .env is optional and may not exist in production builds
+    # - .env

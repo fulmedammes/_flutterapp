@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/_flutterapp/">
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -31,6 +31,17 @@
 
   <title>my_pwa_app</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Environment variables -->
+  <script>
+    // Default empty ENV object that will be replaced during GitHub Actions build
+    window.ENV = {
+      SUPABASE_URL: null,
+      SUPABASE_ANON_KEY: null
+    };
+  </script>
+  <!-- This will be created by GitHub Actions during deployment -->
+  <script src="environment.js"></script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
