@@ -28,16 +28,24 @@ jobs:
         # ADDED: --dart-define flags
         run: flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
+      # ADDED: Step to move build output for --prebuilt
+      - name: Prepare prebuilt output for Vercel
+        run: |
+          mkdir -p .vercel
+          mv build/web .vercel/output
+
       - name: Install Vercel CLI
         run: npm install -g vercel
 
       - name: List build directory contents (for debugging)
-        run: ls -la build/web
+        # MODIFIED: List the new output directory
+        run: ls -la .vercel/output
 
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./build/web
-        run: vercel deploy --prebuilt --prod --confirm --token $VERCEL_TOKEN
+        # REMOVED: working-directory
+        # MODIFIED: Use deploy --prebuilt from root, replaced deprecated --confirm with --yes
+        run: vercel deploy --prebuilt --prod --yes --token $VERCEL_TOKEN
 
 
