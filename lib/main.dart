@@ -33,6 +33,7 @@ class EnvConfig {
     // try to load from .env file
     if (variables.isEmpty) {
       try {
+        // Try to load .env, but handle the case where it doesn't exist
         await dotenv.load(fileName: ".env");
         
         final supabaseUrl = dotenv.env['SUPABASE_URL'];
@@ -43,7 +44,8 @@ class EnvConfig {
         
         print('Loaded environment variables from .env file');
       } catch (e) {
-        print('Error loading .env file: $e');
+        // Simply log the error and continue - .env is optional
+        print('Note: .env file not found or not readable. This is expected in production.');
       }
     }
 

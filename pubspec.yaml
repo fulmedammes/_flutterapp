@@ -27,6 +27,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Add the assets section to include the .env file
+  # Assets section
   assets:
-    - .env
+    # Add a placeholder asset file that always exists
+    - pubspec.yaml  # This file always exists in the project
+    # .env is optional and may not exist in production builds
+    # - .env
