@@ -15,46 +15,28 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.0'  # Specify your Flutter version
-          channel: 'stable'
+          flutter-version: '3.29'  # Set to user requested version
+          channel: 'stable' # Uncommented as 3.29 is listed as stable
 
       - name: Get dependencies
         run: flutter pub get
-      
-      - name: Set up environment variables
-        run: |
-          # Create the environment.js file that will override the default ENV in index.html
-          echo "window.ENV = {};" > web/environment.js
-          echo "window.ENV.SUPABASE_URL = '${{ vars.SUPABASE_URL }}';" >> web/environment.js
-          echo "window.ENV.SUPABASE_ANON_KEY = '${{ secrets.SUPABASE_ANON_KEY }}';" >> web/environment.js
-
-      - name: Verify environment.js
-        run: cat web/environment.js
 
       - name: Build Flutter web
-        run: flutter build web --release
+        env: # Make secrets available as environment variables for the run command
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        # ADDED: --dart-define flags
+        run: flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Link Vercel Project
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: vercel link --yes --token $VERCEL_TOKEN --scope $VERCEL_ORG_ID --project $VERCEL_PROJECT_ID
-        working-directory: build/web
-
-      - name: List build directory contents
+      - name: List build directory contents (for debugging)
         run: ls -la build/web
 
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: |
-          cd build/web
-          vercel --prod --confirm --token $VERCEL_TOKEN
+        run: vercel build/web --prod --confirm --token $VERCEL_TOKEN
 
 
