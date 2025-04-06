@@ -27,7 +27,10 @@ jobs:
           echo "window.ENV = {};" > web/environment.js
           echo "window.ENV.SUPABASE_URL = '${{ vars.SUPABASE_URL }}';" >> web/environment.js
           echo "window.ENV.SUPABASE_ANON_KEY = '${{ secrets.SUPABASE_ANON_KEY }}';" >> web/environment.js
-      
+
+      - name: Verify environment.js
+        run: cat web/environment.js
+
       - name: Build Flutter web
         run: flutter build web --release
 
