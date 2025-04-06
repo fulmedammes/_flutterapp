@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'version_widget.dart';
 import 'update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _updateAvailable = false;
   String _latestVersion = '';
+  final _supabase = Supabase.instance.client;
 
   @override
   void initState() {
@@ -39,10 +41,32 @@ class _HomeScreenState extends State<HomeScreen> {
     html.window.location.reload();
   }
 
+  Future<void> _signOut() async {
+    try {
+      await _supabase.auth.signOut();
+      // AuthGate will handle navigation
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign Out Failed: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('New Home Screen! #15')),
+      appBar: AppBar(
+        title: const Text('New Home Screen! #15'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: _signOut,
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

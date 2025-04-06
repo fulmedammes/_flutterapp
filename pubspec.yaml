@@ -3,7 +3,7 @@ description: A Flutter web app with welcome screen, version, and PWA features.
 
 publish_to: 'none'
 
-version: 1.0.0+16
+version: 1.0.0+17
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -15,6 +15,9 @@ dependencies:
   shared_preferences: ^2.2.2
   package_info_plus: ^5.0.1
   http: ^1.1.0
+  supabase_flutter: ^2.8.4
+  flutter_dotenv: ^5.2.1
+  supabase_auth_ui: ^0.5.4
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +26,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Add the assets section to include the .env file
+  assets:
+    - .env

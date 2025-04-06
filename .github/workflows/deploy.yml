@@ -1,50 +1,49 @@
-name: Build and Deploy Flutter Web to Vercel
+name: Deploy Flutter Web App
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]  # Or your default branch
+  workflow_dispatch:    # Manual trigger
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2'  # Change to match local version
+          flutter-version: '3.16.x'  # Specify your Flutter version
+          channel: 'stable'
 
-      - name: Install dependencies
+      - name: Get dependencies
         run: flutter pub get
-
-      - name: Build Flutter Web
+      
+      - name: Set up environment variables
+        run: |
+          # Create the environment.js file that will override the default ENV in index.html
+          echo "window.ENV = {};" > web/environment.js
+          echo "window.ENV.SUPABASE_URL = '${{ vars.SUPABASE_URL }}';" >> web/environment.js
+          echo "window.ENV.SUPABASE_ANON_KEY = '${{ secrets.SUPABASE_ANON_KEY }}';" >> web/environment.js
+      
+      - name: Build Flutter web
         run: flutter build web --release
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Link Vercel Project
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: vercel link --yes --token $VERCEL_TOKEN --scope $VERCEL_ORG_ID --project $VERCEL_PROJECT_ID
-        working-directory: build/web
-
-      - name: List build directory contents
-        run: ls -la build/web
-
-      - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }} # Token still needed for auth
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: |
-          cd build/web
-          vercel --prod --confirm --token $VERCEL_TOKEN # Keep token for auth, remove scope
+      # Example deployment step (using GitHub Pages)
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          
+      # Alternatively, you could deploy to other platforms
+      # - name: Deploy to Firebase
+      #   uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     repoToken: '${{ secrets.GITHUB_TOKEN }}'
+      #     firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+      #     channelId: live
 
 
